@@ -1,0 +1,46 @@
+.container{
+    width: 400px;
+    margin: auto;
+}
+#text_1:hover{
+    font-size:large;
+}
+h1, h2{
+    text-align: center;
+    color: grey;
+}
+
+#intro{
+    text-align: center;
+    color: grey;
+    font-weight:400;
+}
+.newanchor:link {
+    color: white;
+    text-decoration:none;
+}
+.newanchor:visited {
+    color: white;
+    text-decoration:none;
+}
+.newanchor:hover {
+    color: white;
+    font-size:large;
+}
+/*.carousel-caption changes the position of the captions in carousel, they are by default on top of the image */
+.carousel-caption {
+    position: relative;
+    left: 0;
+    top: 0;
+}
+#myDiv{
+    text-align: center;
+}
+.hidden{
+    display: none;
+}
+main {
+    height: 350px;
+    overflow:scroll;
+}
+

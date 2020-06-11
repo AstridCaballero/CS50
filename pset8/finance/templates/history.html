@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Shares</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Transacted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <th scope="row">{{row["symbol"]}}</th>
+                        <td>{{row["shares"]}}</td>
+                        <!-- To call the function 'usd' which is declared as a filter in application.py
+                        (app.jinja_env.filters["usd"] = usd), use '|' -->
+                        <td>{{row["price"]|usd}}</td>
+                        <td>{{row["date"]}}</td>
+                    </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

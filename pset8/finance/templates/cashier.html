@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Cashier
+{% endblock %}
+
+{% block main %}
+<!-- two forms POST to same route https://stackoverflow.com/questions/18290142/multiple-forms-in-a-single-page-using-flask-and-wtforms -->
+    <form  action="/cashier" method="post">
+        <div class="row justify-content-center">
+            <div class="form-group col-2">
+                <input type="number" min="0" class="form-control" id="deposit" name="deposit" placeholder="Deposit" step="0.01">
+            </div>
+            <div class="form-group col-2">
+            <button class="btn btn-primary mb-2" type="submit" id="deposit_sub" name="submit_button" value="Value-1" disabled>Deposit</button>
+            </div>
+        </div>
+    </form>
+    <br>
+    <form action="/cashier" method="post">
+        <div class="row justify-content-center">
+            <div class="form-group col-2">
+                <input type="number" min="0" max="{{cash}}" class="form-control" id="withdraw" name="withdraw" placeholder="Withdraw" step="0.01">
+            </div>
+            <div class="form-group col-2">
+            <button class="btn btn-primary mb-2" type="submit" id="withdraw_sub" name="submit_button" value="Value-2" disabled>Withdraw</button>
+            </div>
+        </div>
+    </form>
+    <div class="form-group">
+        Current balance is <strong>{{cash|usd}}</srong>
+    </div>
+    <!--minute [48:00] CS50 2020 video on Flask https://cs50.harvard.edu/x/2020/tracks/web/ -->
+    <script>
+        document.querySelector("#deposit").onkeyup = function() {
+            if (document.querySelector("#deposit").value === "") {
+                document.querySelector("#deposit_sub").disabled = true;
+            }else{
+                document.querySelector("#deposit_sub").disabled = false;
+            }
+        }
+        document.querySelector("#withdraw").onkeyup = function() {
+            if (document.querySelector("#withdraw").value === "") {
+                document.querySelector("#withdraw_sub").disabled = true;
+            }else{
+                document.querySelector("#withdraw_sub").disabled = false;
+            }
+        }
+    </script>
+{% endblock %}

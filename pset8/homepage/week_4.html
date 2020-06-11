@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <br>
+        <title>Week 4: Memory</title>
+        <script>
+            function show_hide(id){
+                let everyChild = document.querySelectorAll("#all_ids div");
+                let e = document.getElementById(id);
+                for (let i = 0; i<everyChild.length; i++) {
+                    if(e===everyChild[i])
+                        everyChild[i].style.display = 'block';
+                    else
+                        everyChild[i].style.display = 'none';
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <header>
+            <h1 class="text-muted">Week 4: Memory</h1>
+        </header>
+        <hr>
+        <nav class="nav justify-content-center">
+            <li class="nav-item"><a class="nav-link active text-muted" href="https://77449860-e31d-4441-86d2-af8a51e732fe-ide.cs50.xyz:8080/index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link text-muted" href="https://77449860-e31d-4441-86d2-af8a51e732fe-ide.cs50.xyz:8080/week_1.html">Week 1</a></li>
+            <li class="nav-item"><a class="nav-link text-muted" href="https://77449860-e31d-4441-86d2-af8a51e732fe-ide.cs50.xyz:8080/week_2.html">Week 2</a></li>
+            <li class="nav-item"><a class="nav-link text-muted" href="https://77449860-e31d-4441-86d2-af8a51e732fe-ide.cs50.xyz:8080/week_3.html">Week 3</a></li>
+            <li class="nav-item"><a class="nav-link text-muted" href="https://77449860-e31d-4441-86d2-af8a51e732fe-ide.cs50.xyz:8080/week_4.html">Week 4</a></li>
+        </nav>
+        <hr>
+        <!--to divide the area in two use: Bootstrap 4 Grid System https://www.w3schools.com/bootstrap4/bootstrap_grid_basic.asp -->
+        <div class="container-fluid">
+            <div class="row">
+                <aside class="col-md-2 px-md-5 py-md-3">
+                    <header><h1 class="text-muted text-left">Code</h1></header>
+                        <nav>
+                            <ul class="nav flex-column">
+                                <li><a class="nav-link active text-muted" href="#filter(less)" onclick="return show_hide('filter(less)');">filter(less)</a></li>
+                                <li><a class="nav-link text-muted" href="#Recover" onclick="return show_hide('Recover');">Recover</a></li>
+                            </ul>
+                        </nav>
+                </aside>
+                <main class="col-md-9 bg-light px-md-5 py-md-3">
+                    <div id='all_ids'>
+                        <div id="filter(less)">
+                            <h2>filter(less)</h2>
+                            <pre><code>
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include "helpers.h"
+
+
+// Convert image to grayscale
+void grayscale(int height, int width, RGBTRIPLE image[height][width])
+{
+    //loop each scanline (row)
+    for (int i = 0; i < height; i++)
+    {
+        //loop each pixel (column)
+        for (int j = 0; j < width; j++)
+        {
+            // Get average value per pixel
+            int new_RGB = round((image[i][j].rgbtBlue + image[i][j].rgbtGreen + image[i][j].rgbtRed) / 3.0);
+
+            // assigned average value to each channel (RGB) in each pixel
+            image[i][j].rgbtBlue = new_RGB;
+            image[i][j].rgbtGreen = new_RGB;
+            image[i][j].rgbtRed = new_RGB;
+        }
+    }
+
+    return;
+}
+
+// Convert image to sepia
+void sepia(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Loop each scanline (row)
+    for (int i = 0; i < height; i++)
+    {
+        // Loop each pixel
+        for (int j = 0; j < width; j++)
+        {
+            int originalBlue = image[i][j].rgbtBlue;
+            int originalGreen = image[i][j].rgbtGreen;
+            int originalRed = image[i][j].rgbtRed;
+
+            // Calculate sepia values
+            int sepiaBlue = round(.272 * originalRed + .534 * originalGreen + .131 * originalBlue);
+            if (sepiaBlue <= 0xff)
+            {
+                image[i][j].rgbtBlue = sepiaBlue;
+            }
+            else
+            {
+                image[i][j].rgbtBlue = 0xff;
+            }
+
+            int sepiaGreen = round(.349 * originalRed + .686 * originalGreen + .168 * originalBlue);
+            if (sepiaGreen <= 0xff)
+            {
+                image[i][j].rgbtGreen = sepiaGreen;
+            }
+            else
+            {
+                image[i][j].rgbtGreen = 0xff;
+            }
+
+            int sepiaRed = round(.393 * originalRed + .769 * originalGreen + .189 * originalBlue);
+            if (sepiaRed <= 0xff)
+            {
+                image[i][j].rgbtRed = sepiaRed;
+            }
+            else
+            {
+                image[i][j].rgbtRed = 0xff;
+            }
+        }
+    }
+    return;
+}
+
+// Reflect image horizontally
+void reflect(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Loop each scanline (row)
+    for (int i = 0; i < height; i++)
+    {
+        // calculate the number of pixels and check if number is either even or odd
+        // if even all pixels swap
+        int half = width / 2;
+        if (width % 2 != 0)
+        {
+            half = (width + 1) / 2;
+        }
+
+        // loop each pixel
+        for (int j = 0; j < half; j++)
+        {
+            //swap first pixel with last pixel
+            int new_width = width - 1 - j;
+            int temp_Blue = image[i][j].rgbtBlue;
+            int temp_Green = image[i][j].rgbtGreen;
+            int temp_Red = image[i][j].rgbtRed;
+
+            image[i][j].rgbtBlue = image[i][new_width].rgbtBlue;
+            image[i][new_width].rgbtBlue = temp_Blue;
+
+            image[i][j].rgbtGreen = image[i][new_width].rgbtGreen;
+            image[i][new_width].rgbtGreen = temp_Green;
+
+            image[i][j].rgbtRed = image[i][new_width].rgbtRed;
+            image[i][new_width].rgbtRed = temp_Red;
+        }
+    }
+    return;
+}
+
+// Blur image
+void blur(int height, int width, RGBTRIPLE image[height][width])
+{
+    // make a copy of the original image
+    RGBTRIPLE(*copy_image)[width] = calloc(height, (width * sizeof(RGBTRIPLE)));
+
+    for (int k = 0; k < height; k++)
+    {
+        for (int m = 0; m < width; m++)
+        {
+            copy_image[k][m].rgbtBlue = image[k][m].rgbtBlue;
+            copy_image[k][m].rgbtGreen = image[k][m].rgbtGreen;
+            copy_image[k][m].rgbtRed = image[k][m].rgbtRed;
+        }
+    }
+
+
+    // loop each scanline (row)
+    for (int i = 0; i < height; i++)
+    {
+        // loop each pixel
+        for (int j = 0; j < width; j++)
+        {
+            // find neighboring pixels
+            float total_pix;
+            int i_before = i - 1;
+            int i_after = i + 1;
+            int j_before = j - 1;
+            int j_after = j + 1;
+
+
+            // is pixel in a corner?
+            if ((i == 0 || (i == height - 1)) && (j == 0  || j == (width - 1)))
+            {
+                total_pix = 4.0;
+                // left top corner?
+                if (i == 0 && j == 0)
+                {
+                    image[i][j].rgbtBlue =  round((copy_image[i][j].rgbtBlue + copy_image[i][j_after].rgbtBlue + copy_image[i_after][j].rgbtBlue +
+                                                   copy_image[i_after][j_after].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen =  round((copy_image[i][j].rgbtGreen + copy_image[i][j_after].rgbtGreen + copy_image[i_after][j].rgbtGreen +
+                                                    copy_image[i_after][j_after].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed =  round((copy_image[i][j].rgbtRed + copy_image[i][j_after].rgbtRed + copy_image[i_after][j].rgbtRed +
+                                                  copy_image[i_after][j_after].rgbtRed) / total_pix);
+                }
+                // Right top corner?
+                else if (i == 0 && j == (width - 1))
+                {
+                    image[i][j].rgbtBlue =  round((copy_image[i][j].rgbtBlue + copy_image[i][j_before].rgbtBlue + copy_image[i_after][j].rgbtBlue +
+                                                   copy_image[i_after][j_before].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen =  round((copy_image[i][j].rgbtGreen + copy_image[i][j_before].rgbtGreen + copy_image[i_after][j].rgbtGreen +
+                                                    copy_image[i_after][j_before].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed =  round((copy_image[i][j].rgbtRed + copy_image[i][j_before].rgbtRed + copy_image[i_after][j].rgbtRed +
+                                                  copy_image[i_after][j_before].rgbtRed) / total_pix);
+                }
+                // Left bottom corner?
+                else if ((i == height - 1) && j == 0)
+                {
+                    image[i][j].rgbtBlue =  round((copy_image[i][j].rgbtBlue + copy_image[i_before][j].rgbtBlue +
+                                                   copy_image[i_before][j_after].rgbtBlue +
+                                                   copy_image[i][j_after].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen =  round((copy_image[i][j].rgbtGreen + copy_image[i_before][j].rgbtGreen +
+                                                    copy_image[i_before][j_after].rgbtGreen +
+                                                    copy_image[i][j_after].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed =  round((copy_image[i][j].rgbtRed + copy_image[i_before][j].rgbtRed + copy_image[i_before][j_after].rgbtRed +
+                                                  copy_image[i][j_after].rgbtRed) / total_pix);
+                }
+                else
+                {
+                    image[i][j].rgbtBlue =  round((copy_image[i][j].rgbtBlue + copy_image[i_before][j_before].rgbtBlue +
+                                                   copy_image[i_before][j].rgbtBlue +
+                                                   copy_image[i][j_before].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen =  round((copy_image[i][j].rgbtGreen + copy_image[i_before][j_before].rgbtGreen +
+                                                    copy_image[i_before][j].rgbtGreen +
+                                                    copy_image[i][j_before].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed =  round((copy_image[i][j].rgbtRed + copy_image[i_before][j_before].rgbtRed + copy_image[i_before][j].rgbtRed +
+                                                  copy_image[i][j_before].rgbtRed) / total_pix);
+                }
+            }
+
+            // is pixel along an edge?
+            else if (i == 0 || (i == height - 1) || j == 0 || (j == width - 1))
+            {
+                total_pix = 6.0;
+
+                // top edge?
+                if (i == 0)
+                {
+                    image[i][j].rgbtBlue = round((copy_image[i][j_before].rgbtBlue + copy_image[i][j].rgbtBlue + copy_image[i][j_after].rgbtBlue +
+                                                  copy_image[i_after][j_before].rgbtBlue + copy_image[i_after][j].rgbtBlue +
+                                                  copy_image[i_after][j_after].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen = round((copy_image[i][j_before].rgbtGreen + copy_image[i][j].rgbtGreen + copy_image[i][j_after].rgbtGreen +
+                                                   copy_image[i_after][j_before].rgbtGreen + copy_image[i_after][j].rgbtGreen +
+                                                   copy_image[i_after][j_after].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed = round((copy_image[i][j_before].rgbtRed + copy_image[i][j].rgbtRed + copy_image[i][j_after].rgbtRed +
+                                                 copy_image[i_after][j_before].rgbtRed + copy_image[i_after][j].rgbtRed +
+                                                 copy_image[i_after][j_after].rgbtRed) / total_pix);
+                }
+                // bottom edge?
+                else if (i == height - 1)
+                {
+                    image[i][j].rgbtBlue = round((copy_image[i_before][j_before].rgbtBlue + copy_image[i_before][j].rgbtBlue +
+                                                  copy_image[i_before][j_after].rgbtBlue +
+                                                  copy_image[i][j_before].rgbtBlue + copy_image[i][j].rgbtBlue +
+                                                  copy_image[i][j_after].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen = round((copy_image[i_before][j_before].rgbtGreen + copy_image[i_before][j].rgbtGreen +
+                                                   copy_image[i_before][j_after].rgbtGreen +
+                                                   copy_image[i][j_before].rgbtGreen + copy_image[i][j].rgbtGreen +
+                                                   copy_image[i][j_after].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed = round((copy_image[i_before][j_before].rgbtRed + copy_image[i_before][j].rgbtRed +
+                                                 copy_image[i_before][j_after].rgbtRed +
+                                                 copy_image[i][j_before].rgbtRed + copy_image[i][j].rgbtRed +
+                                                 copy_image[i][j_after].rgbtRed) / total_pix);
+                }
+                // left edge?
+                else if (j == 0)
+                {
+                    image[i][j].rgbtBlue = round((copy_image[i_before][j].rgbtBlue + copy_image[i_before][j_after].rgbtBlue +
+                                                  copy_image[i][j].rgbtBlue +
+                                                  copy_image[i][j_after].rgbtBlue + copy_image[i_after][j].rgbtBlue +
+                                                  copy_image[i_after][j_after].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen = round((copy_image[i_before][j].rgbtGreen + copy_image[i_before][j_after].rgbtGreen +
+                                                   copy_image[i][j].rgbtGreen +
+                                                   copy_image[i][j_after].rgbtGreen + copy_image[i_after][j].rgbtGreen +
+                                                   copy_image[i_after][j_after].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed = round((copy_image[i_before][j].rgbtRed + copy_image[i_before][j_after].rgbtRed + copy_image[i][j].rgbtRed +
+                                                 copy_image[i][j_after].rgbtRed + copy_image[i_after][j].rgbtRed +
+                                                 copy_image[i_after][j_after].rgbtRed) / total_pix);
+
+                }
+                // right edge?
+                else
+                {
+                    image[i][j].rgbtBlue = round((copy_image[i_before][j_before].rgbtBlue + copy_image[i_before][j].rgbtBlue +
+                                                  copy_image[i][j_before].rgbtBlue + copy_image[i][j].rgbtBlue + copy_image[i_after][j_before].rgbtBlue +
+                                                  copy_image[i_after][j].rgbtBlue) / total_pix);
+                    image[i][j].rgbtGreen = round((copy_image[i_before][j_before].rgbtGreen + copy_image[i_before][j].rgbtGreen +
+                                                   copy_image[i][j_before].rgbtGreen + copy_image[i][j].rgbtGreen + copy_image[i_after][j_before].rgbtGreen +
+                                                   copy_image[i_after][j].rgbtGreen) / total_pix);
+                    image[i][j].rgbtRed = round((copy_image[i_before][j_before].rgbtRed + copy_image[i_before][j].rgbtRed +
+                                                 copy_image[i][j_before].rgbtRed +
+                                                 copy_image[i][j].rgbtRed + copy_image[i_after][j_before].rgbtRed +
+                                                 copy_image[i_after][j].rgbtRed) / total_pix);
+                }
+            }
+            // pixel has eight neighbours
+            else
+            {
+                total_pix = 9.0;
+                image[i][j].rgbtBlue = round((copy_image[i_before][j_before].rgbtBlue + copy_image[i_before][j].rgbtBlue +
+                                              copy_image[i_before][j_after].rgbtBlue + copy_image[i][j_before].rgbtBlue + copy_image[i][j].rgbtBlue +
+                                              copy_image[i][j_after].rgbtBlue + copy_image[i_after][j_before].rgbtBlue + copy_image[i_after][j].rgbtBlue +
+                                              copy_image[i_after][j_after].rgbtBlue) / total_pix);
+                image[i][j].rgbtGreen = round((copy_image[i_before][j_before].rgbtGreen + copy_image[i_before][j].rgbtGreen +
+                                               copy_image[i_before][j_after].rgbtGreen + copy_image[i][j_before].rgbtGreen + copy_image[i][j].rgbtGreen +
+                                               copy_image[i][j_after].rgbtGreen + copy_image[i_after][j_before].rgbtGreen + copy_image[i_after][j].rgbtGreen +
+                                               copy_image[i_after][j_after].rgbtGreen) / total_pix);
+                image[i][j].rgbtRed = round((copy_image[i_before][j_before].rgbtRed + copy_image[i_before][j].rgbtRed +
+                                             copy_image[i_before][j_after].rgbtRed + copy_image[i][j_before].rgbtRed +
+                                             copy_image[i][j].rgbtRed + copy_image[i][j_after].rgbtRed +
+                                             copy_image[i_after][j_before].rgbtRed + copy_image[i_after][j].rgbtRed +
+                                             copy_image[i_after][j_after].rgbtRed) / total_pix);
+            }
+        }
+    }
+    free(copy_image);
+    return;
+}
+                            </code></pre>
+                        </div>
+                        <div id="Recover" class="hidden">
+                            <h2>Recover</h2>
+                            <pre><code>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+
+typedef uint8_t BYTE;
+
+int main(int argc, char *argv[])
+{
+    // check user input two arguments
+    if (argc != 2)
+    {
+        printf("usage: %s infile", argv[0]);
+        return 1;
+    }
+
+    char *infile = argv[1];
+
+    // Open input file
+    FILE *inptr = fopen(infile, "r");
+    // check *inptr is valid
+    if (inptr == NULL)
+    {
+        printf("Could not open %s.\n", infile);
+        return 2;
+    }
+
+    // Calculate lenght of infile
+    fseek(inptr, 0, SEEK_END);
+    int len = ftell(inptr);
+
+    // Go back to the beginning of infile
+    rewind(inptr);
+
+    // Calculate number of blocks. each bloack has 512 bytes
+    int n_blocks = len / 512;
+    // check for slack space
+    if ((len % 512) > 0)
+    {
+        n_blocks = n_blocks + 1;
+    }
+
+    // Initialize count for the images
+    int image_count = 0;
+
+    // Initialize pointer for images files
+    FILE *img = NULL;
+
+    // Buffer or temp storage. char
+    unsigned char *block = malloc(sizeof(BYTE) * 512);
+
+    // iterate over each block of the card
+    for (int i = 0; i < n_blocks; i++)
+    {
+        // check if block has 512 bytes to avoid going into a slack space
+        if (fread(block, sizeof(BYTE), 512, inptr) == 512)
+        {
+            // find beginning of JPEG
+            if (block[0] == 0xff &&
+                block[1] == 0xd8 &&
+                block[2] == 0xff &&
+                (block[3] & 0xf0) == 0xe0)
+            {
+                // Prepare names for images
+                char file_name[sizeof"999.jpg"];
+                sprintf(file_name, "%03d.jpg", image_count);
+
+                // Check if JPEG is the not first in order to close previous JPEG
+                if (image_count != 0)
+                {
+                    fclose(img);
+                }
+
+                // Open new file for writing
+                img = fopen(file_name, "w");
+
+                // Store JPEG in file
+                fwrite(block, sizeof(BYTE), 512, img);
+
+                image_count++;
+            }
+            // check if block is part of JPEG but not the first block of the JPEG
+            else if (image_count != 0)
+            {
+                // Store in open JPEG file
+                fwrite(block, sizeof(BYTE), 512, img);
+            }
+        }
+    }
+    // close last working JPEG
+    fclose(img);
+    // free malloc from the heap
+    free(block);
+    // close infile
+    fclose(inptr);
+    return 0;
+}
+                            </code></pre>
+                        </div>
+                        <!--<div></div>-->
+                        <!--<div></div>-->
+                    </div>
+                </main>
+            </div>
+        </div>
+        <hr>
+        <footer id="intro">Design by Cabfish 2020</footer>
+    </body>
+</html>
